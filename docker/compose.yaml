@@ -1,0 +1,23 @@
+version: '3.9'
+name: 'desafio-caju'
+
+services:
+  #Data Base
+  postgres:
+    image: postgres:16-alpine3.20
+    restart: no
+    environment:
+      - POSTGRES_DB=desafio
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    network_mode: bridge
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgresql.conf:/docker-entrypoint-initdb.d/postgresql.conf
+    command: 'postgres -c config_file=/docker-entrypoint-initdb.d/postgresql.conf'
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '1GB'
