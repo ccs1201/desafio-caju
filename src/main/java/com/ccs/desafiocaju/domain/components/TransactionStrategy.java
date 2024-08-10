@@ -5,6 +5,7 @@ import com.ccs.desafiocaju.domain.models.entities.Transaction;
 import com.ccs.desafiocaju.domain.models.enums.TransactionCodesEnum;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.Set;
 
 public interface TransactionStrategy {
@@ -18,4 +19,6 @@ public interface TransactionStrategy {
     TransactionCodesEnum processTransaction(Transaction transactio);
 
     Set<String> getMccs();
+
+    Optional<TransactionStrategy> getFallback();
 }

@@ -6,6 +6,7 @@ import com.ccs.desafiocaju.domain.models.enums.TransactionCodesEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -32,5 +33,10 @@ public class CashTransactionStrategy implements TransactionStrategy {
     @Override
     public Set<String> getMccs() {
         return MCC_CASH;
+    }
+
+    @Override
+    public Optional<TransactionStrategy> getFallback() {
+        return Optional.empty();
     }
 }

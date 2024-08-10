@@ -1,8 +1,8 @@
 package com.ccs.desafiocaju.domain.services.impl;
 
 import com.ccs.desafiocaju.api.v1.inputs.TransactionInput;
+import com.ccs.desafiocaju.domain.components.TransactionStrategy;
 import com.ccs.desafiocaju.domain.components.TransactionStrategyFactory;
-import com.ccs.desafiocaju.domain.components.impl.CashTransactionStrategy;
 import com.ccs.desafiocaju.domain.infra.exceptions.CajuInsufficientBalanceException;
 import com.ccs.desafiocaju.domain.models.entities.Merchant;
 import com.ccs.desafiocaju.domain.models.entities.Transaction;
@@ -23,7 +23,6 @@ public class TransactionServiceImpl {
     private final TransactionRepository transactionRepository;
     private final AccountService accountService;
     private final TransactionStrategyFactory transactionStrategyFactory;
-    private final CashTransactionStrategy cashTransactionStrategy;
     private final MerchantService merchantService;
 
     @Transactional
@@ -34,37 +33,40 @@ public class TransactionServiceImpl {
                 .account(account)
                 .amount(input.totalAmount())
                 .merchant(merchant)
-                .mcc(input.mcc())
+                .mcc(merchant.getMcc())
                 .build();
+        var strategy = transactionStrategyFactory.getStrategy(transaction.getMcc());
+
         try {
-            var transactionCode = process(transaction);
+            var transactionCode = process(transaction, strategy);
 
             transactionRepository.save(transaction);
 
             return transactionCode.getValue();
 
         } catch (CajuInsufficientBalanceException e) {
-            log.debug("Saldo insuficiente");
-            return fallback(transaction).getValue();
+            log.debug(e.getMessage());
+            try {
+                return fallBack(strategy, transaction).getValue();
+            } catch (CajuInsufficientBalanceException ex) {
+                log.debug(ex.getMessage());
+                return TransactionCodesEnum.SALDO_INSUFICIENTE.getValue();
+            }
         }
     }
 
-    private TransactionCodesEnum fallback(Transaction transaction) {
-        log.debug("Fallback to CASH");
-        try {
-            var transactionCode = cashTransactionStrategy.processTransaction(transaction);
-            log.debug("Saldo CASH utilizado com sucesso");
-            transactionRepository.save(transaction);
-            return transactionCode;
-        } catch (CajuInsufficientBalanceException e) {
-            return e.getCode();
+    private TransactionCodesEnum fallBack(TransactionStrategy strategy, Transaction transaction) {
+        if (strategy.getFallback().isEmpty()) {
+            return TransactionCodesEnum.SALDO_INSUFICIENTE;
         }
-    }
 
-    private TransactionCodesEnum process(Transaction transaction) {
-        return transactionStrategyFactory
-                .getStrategy(transaction.getMcc())
+        return strategy.getFallback()
+                .get()
                 .processTransaction(transaction);
+    }
+
+    private TransactionCodesEnum process(Transaction transaction, TransactionStrategy strategy) {
+        return strategy.processTransaction(transaction);
     }
 
     private Merchant getOrCreateMerchant(TransactionInput transaction) {

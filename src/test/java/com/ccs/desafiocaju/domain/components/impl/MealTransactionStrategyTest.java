@@ -6,22 +6,25 @@ import com.ccs.desafiocaju.domain.models.entities.Transaction;
 import com.ccs.desafiocaju.domain.models.enums.TransactionCodesEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+@ExtendWith(MockitoExtension.class)
 class MealTransactionStrategyTest {
 
+    @InjectMocks
     private MealTransactionStrategy strategy;
     private Account account;
     private Transaction transaction;
 
     @BeforeEach
      void setUp() {
-        strategy = new MealTransactionStrategy();
         account = new Account();
         account.setBalanceMeal(new BigDecimal("200.00"));
         transaction = new Transaction();
