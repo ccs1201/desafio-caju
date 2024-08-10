@@ -2,7 +2,7 @@ package com.ccs.desafiocaju.api.v1.controllers;
 
 import com.ccs.desafiocaju.api.v1.inputs.TransactionInput;
 import com.ccs.desafiocaju.api.v1.outputs.TransactionResponse;
-import com.ccs.desafiocaju.domain.services.impl.TransactionServiceImpl;
+import com.ccs.desafiocaju.domain.services.TransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class TransactionController {
 
-    private final TransactionServiceImpl transactionServiceImpl;
+    private final TransactionService transactionService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public TransactionResponse create(@Valid @RequestBody TransactionInput input) {
-        return new TransactionResponse(transactionServiceImpl.authorizeTransaction(input));
+        return new TransactionResponse(transactionService.authorizeTransaction(input));
     }
 }

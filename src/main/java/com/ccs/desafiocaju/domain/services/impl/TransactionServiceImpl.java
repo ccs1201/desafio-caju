@@ -10,6 +10,7 @@ import com.ccs.desafiocaju.domain.models.enums.TransactionCodesEnum;
 import com.ccs.desafiocaju.domain.repositories.TransactionRepository;
 import com.ccs.desafiocaju.domain.services.AccountService;
 import com.ccs.desafiocaju.domain.services.MerchantService;
+import com.ccs.desafiocaju.domain.services.TransactionService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TransactionServiceImpl {
+public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final AccountService accountService;
@@ -26,6 +27,7 @@ public class TransactionServiceImpl {
     private final MerchantService merchantService;
 
     @Transactional
+    @Override
     public String authorizeTransaction(TransactionInput input) {
         var account = accountService.findByIdLocking(input.account());
         var merchant = getOrCreateMerchant(input);
