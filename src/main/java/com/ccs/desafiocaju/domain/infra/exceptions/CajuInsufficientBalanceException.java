@@ -1,0 +1,13 @@
+package com.ccs.desafiocaju.domain.infra.exceptions;
+
+import com.ccs.desafiocaju.domain.models.enums.TransactionCodesEnum;
+import lombok.Getter;
+
+@Getter
+public class CajuInsufficientBalanceException extends CajuException {
+    private static final TransactionCodesEnum code = TransactionCodesEnum.SALDO_INSUFICIENTE;
+
+    public CajuInsufficientBalanceException(String tipoSaldo) {
+        super("Saldo %S insuficiente".formatted(tipoSaldo));
+    }
+}

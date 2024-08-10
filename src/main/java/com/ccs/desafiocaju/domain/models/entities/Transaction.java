@@ -17,13 +17,17 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private Long id;
-    @ManyToOne(optional = false)
+
+    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
+
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
-    @Column(nullable = false)
-    private String merchant;
+
+    @ManyToOne(optional = false)
+    private Merchant merchant;
+
     @Column(nullable = false)
     private String mcc;
 

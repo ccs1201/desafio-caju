@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum TransactionCodesEnum {
 
     APROVADA("00"),
-    REJEITADA("51"),
+    SALDO_INSUFICIENTE("51"),
     ERRO("07");
 
     private final String value;
