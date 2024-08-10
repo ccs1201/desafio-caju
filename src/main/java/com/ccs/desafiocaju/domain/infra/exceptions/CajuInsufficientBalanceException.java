@@ -8,6 +8,6 @@ public class CajuInsufficientBalanceException extends CajuException {
     private final TransactionCodesEnum code = TransactionCodesEnum.SALDO_INSUFICIENTE;
 
     public CajuInsufficientBalanceException(String tipoSaldo) {
-        super("Saldo %S insuficiente".formatted(tipoSaldo));
+        super("%S Saldo insuficiente".formatted(tipoSaldo));
     }
 }

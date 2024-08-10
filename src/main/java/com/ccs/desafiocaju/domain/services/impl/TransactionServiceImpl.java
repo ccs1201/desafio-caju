@@ -28,7 +28,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Transactional
     @Override
-    public String authorizeTransaction(TransactionInput input) {
+    public String executeTransaction(TransactionInput input) {
         var account = accountService.findByIdLocking(input.account());
         var merchant = getOrCreateMerchant(input);
         var transaction = Transaction.builder()
@@ -52,7 +52,7 @@ public class TransactionServiceImpl implements TransactionService {
                 return fallBack(strategy, transaction).getValue();
             } catch (CajuInsufficientBalanceException ex) {
                 log.debug(ex.getMessage());
-                return TransactionCodesEnum.SALDO_INSUFICIENTE.getValue();
+                return ex.getCode().getValue();
             }
         }
     }

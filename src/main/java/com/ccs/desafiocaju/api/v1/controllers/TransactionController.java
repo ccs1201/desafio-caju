@@ -18,6 +18,6 @@ public class TransactionController {
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public TransactionResponse create(@Valid @RequestBody TransactionInput input) {
-        return new TransactionResponse(transactionService.authorizeTransaction(input));
+        return new TransactionResponse(transactionService.executeTransaction(input));
     }
 }
