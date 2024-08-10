@@ -3,19 +3,27 @@ package com.ccs.desafiocaju.domain.components.impl;
 import com.ccs.desafiocaju.domain.components.TransactionStrategy;
 import com.ccs.desafiocaju.domain.models.entities.Transaction;
 import com.ccs.desafiocaju.domain.models.enums.TransactionCodesEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
 @Component
+@Slf4j
 public class FoodTransactionStrategy implements TransactionStrategy {
 
     private static final Set<String> MCC_FOOD = Set.of("5411", "5412");
 
     @Override
     public TransactionCodesEnum processTransaction(Transaction transaction) {
-        validarSaldo(transaction);
-        transaction.getAccount().setBalanceFood(transaction.getAccount().getBalanceFood().subtract(transaction.getAmount()));
+        log.debug("Processando Transação em : %s".formatted(this.getClass().getSimpleName()));
+        validarSaldo(transaction.getAccount().getBalanceFood(), transaction.getAmount());
+
+        transaction.getAccount()
+                .setBalanceFood(transaction.getAccount()
+                        .getBalanceFood()
+                        .subtract(transaction.getAmount()));
+
         return TransactionCodesEnum.APROVADA;
 
     }
