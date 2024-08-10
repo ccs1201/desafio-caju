@@ -50,15 +50,14 @@ public class TransactionServiceImpl {
     }
 
     private TransactionCodesEnum fallback(Transaction transaction) {
-        log.debug("Fallback to saldo CASH");
+        log.debug("Fallback to CASH");
         try {
             var transactionCode = cashTransactionStrategy.processTransaction(transaction);
             log.debug("Saldo CASH utilizado com sucesso");
             transactionRepository.save(transaction);
             return transactionCode;
         } catch (CajuInsufficientBalanceException e) {
-            log.debug("Saldo CASH insuficiente");
-            return TransactionCodesEnum.SALDO_INSUFICIENTE;
+            return e.getCode();
         }
     }
 
