@@ -1,7 +1,7 @@
 package com.ccs.desafiocaju.api.v1.controllers;
 
 import com.ccs.desafiocaju.api.v1.inputs.TransactionInput;
-import com.ccs.desafiocaju.api.v1.outputs.TransactionErrorResponse;
+import com.ccs.desafiocaju.api.v1.outputs.TransactionResponse;
 import com.ccs.desafiocaju.domain.services.impl.TransactionServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class TransactionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public TransactionErrorResponse create(@Valid @RequestBody TransactionInput input) {
-        return new TransactionErrorResponse(transactionServiceImpl.authorizeTransaction(input));
+    public TransactionResponse create(@Valid @RequestBody TransactionInput input) {
+        return new TransactionResponse(transactionServiceImpl.authorizeTransaction(input));
     }
 }
