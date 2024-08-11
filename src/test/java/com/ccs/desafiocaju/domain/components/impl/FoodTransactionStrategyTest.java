@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
@@ -21,6 +22,8 @@ class FoodTransactionStrategyTest {
 
     @InjectMocks
     private FoodTransactionStrategy strategy;
+    @Mock
+    private CashTransactionStrategy fallback;
     private Transaction transaction;
     private Account account;
 
@@ -56,5 +59,10 @@ class FoodTransactionStrategyTest {
     @ValueSource(strings = {"5411", "5412"})
     void getMccs(String mcc) {
         assertTrue(strategy.getMccs().contains(mcc));
+    }
+
+    @Test
+    void getFallback() {
+        assertEquals(CashTransactionStrategy.class, strategy.getFallback().get().getClass());
     }
 }

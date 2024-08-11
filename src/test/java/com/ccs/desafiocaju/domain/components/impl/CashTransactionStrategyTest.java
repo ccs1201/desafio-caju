@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CashTransactionStrategyTest {
 
@@ -51,5 +50,10 @@ class CashTransactionStrategyTest {
     @Test
     void getMccs() {
         assertEquals(Set.of("cash"), strategy.getMccs());
+    }
+
+    @Test
+    void testGetFallback(){
+        assertTrue(strategy.getFallback().isEmpty());
     }
 }
