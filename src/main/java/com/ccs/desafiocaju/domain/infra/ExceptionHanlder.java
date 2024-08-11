@@ -15,4 +15,10 @@ public class ExceptionHanlder {
         log.error("Erro ao processar transação", ex);
         return new ExceptionResponse("07");
     }
+
+    @ExceptionHandler(Exception.class)
+    public ExceptionResponse handleException(Exception ex) {
+        log.error("Erro ao processar transação", ex);
+        return new ExceptionResponse("07");
+    }
 }
