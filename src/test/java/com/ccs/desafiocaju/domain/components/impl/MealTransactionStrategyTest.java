@@ -1,8 +1,8 @@
 package com.ccs.desafiocaju.domain.components.impl;
 
-import com.ccs.desafiocaju.domain.infra.exceptions.CajuInsufficientBalanceException;
 import com.ccs.desafiocaju.domain.models.entities.Account;
 import com.ccs.desafiocaju.domain.models.entities.Transaction;
+import com.ccs.desafiocaju.domain.models.enums.TransactionBalanceTypeEnum;
 import com.ccs.desafiocaju.domain.models.enums.TransactionCodesEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
 class MealTransactionStrategyTest {
 
@@ -27,7 +30,7 @@ class MealTransactionStrategyTest {
     private Transaction transaction;
 
     @BeforeEach
-     void setUp() {
+    void setUp() {
         account = new Account();
         account.setBalanceMeal(new BigDecimal("200.00"));
         transaction = new Transaction();
@@ -41,22 +44,28 @@ class MealTransactionStrategyTest {
     }
 
     @Test
-     void testProcessTransactionAprovda() {
+    void testProcessTransactionAprovda() {
         transaction.setAmount(new BigDecimal("100.00"));
 
         var code = strategy.processTransaction(transaction);
 
-        assertEquals(TransactionCodesEnum.APROVADA, code);  // Transação aprovada
+        assertEquals(TransactionCodesEnum.APROVADA, code);
         assertEquals(new BigDecimal("100.00"), account.getBalanceMeal());
+        assertEquals(TransactionBalanceTypeEnum.MEAL, transaction.getTransactionBalanceType());
+        verify(fallback, never()).processTransaction(transaction);
     }
 
     @Test
-     void testProcessTransactionSaldoInsuficiente() {
+    void testProcessTransactionSaldoInsuficiente() {
+        when(fallback.processTransaction(transaction)).thenReturn(TransactionCodesEnum.SALDO_INSUFICIENTE);
+
         transaction.setAmount(new BigDecimal("250.00"));
 
-        assertThrows(CajuInsufficientBalanceException.class, () -> strategy.processTransaction(transaction));
+        var result = strategy.processTransaction(transaction);
 
         assertEquals(new BigDecimal("200.00"), account.getBalanceMeal());
+        assertEquals(TransactionCodesEnum.SALDO_INSUFICIENTE, result);
+        verify(fallback, times(1)).processTransaction(transaction);
     }
 
     @Test

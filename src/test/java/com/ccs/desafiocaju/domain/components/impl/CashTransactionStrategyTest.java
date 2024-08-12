@@ -1,8 +1,8 @@
 package com.ccs.desafiocaju.domain.components.impl;
 
-import com.ccs.desafiocaju.domain.infra.exceptions.CajuInsufficientBalanceException;
 import com.ccs.desafiocaju.domain.models.entities.Account;
 import com.ccs.desafiocaju.domain.models.entities.Transaction;
+import com.ccs.desafiocaju.domain.models.enums.TransactionBalanceTypeEnum;
 import com.ccs.desafiocaju.domain.models.enums.TransactionCodesEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,7 +10,8 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CashTransactionStrategyTest {
 
@@ -29,22 +30,24 @@ class CashTransactionStrategyTest {
     }
 
     @Test
-    void testProcessTransaction_Approved() {
+    void testProcessTransactionAprovada() {
         transaction.setAmount(new BigDecimal("200.00"));
 
         TransactionCodesEnum result = strategy.processTransaction(transaction);
 
-        assertEquals(TransactionCodesEnum.APROVADA, result);  // Transação aprovada
+        assertEquals(TransactionCodesEnum.APROVADA, result);
         assertEquals(new BigDecimal("100.00"), account.getBalanceCash());
+        assertEquals(TransactionBalanceTypeEnum.CASH, transaction.getTransactionBalanceType());
     }
 
     @Test
-    void testProcessTransaction_InsufficientFunds() {
+    void testProcessTransactionSaldoInsuficiente() {
         transaction.setAmount(new BigDecimal("350.00"));
 
-        assertThrows(CajuInsufficientBalanceException.class, () -> strategy.processTransaction(transaction));
+        var result = strategy.processTransaction(transaction);
 
-        assertEquals(new BigDecimal("300.00"), account.getBalanceCash());  // Saldo não deve ser alterado
+        assertEquals(new BigDecimal("300.00"), account.getBalanceCash());
+        assertEquals(TransactionCodesEnum.SALDO_INSUFICIENTE, result);
     }
 
     @Test
@@ -53,7 +56,7 @@ class CashTransactionStrategyTest {
     }
 
     @Test
-    void testGetFallback(){
+    void testGetFallback() {
         assertTrue(strategy.getFallback().isEmpty());
     }
 }

@@ -1,7 +1,9 @@
 package com.ccs.desafiocaju.domain.components.impl;
 
 import com.ccs.desafiocaju.domain.components.TransactionStrategy;
+import com.ccs.desafiocaju.domain.infra.exceptions.CajuInsufficientBalanceException;
 import com.ccs.desafiocaju.domain.models.entities.Transaction;
+import com.ccs.desafiocaju.domain.models.enums.TransactionBalanceTypeEnum;
 import com.ccs.desafiocaju.domain.models.enums.TransactionCodesEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -18,16 +20,19 @@ public class CashTransactionStrategy implements TransactionStrategy {
 
     @Override
     public TransactionCodesEnum processTransaction(Transaction transaction) {
-        log.debug("Processando Transação em : %s".formatted(this.getClass().getSimpleName()));
-        validarSaldo(transaction.getAccount().getBalanceCash(), transaction.getAmount());
+        try {
+            validarSaldo(transaction.getAccount().getBalanceCash(), transaction.getAmount());
+        } catch (CajuInsufficientBalanceException e){
+            return e.getCode();
+        }
 
+        transaction.setTransactionBalanceType(TransactionBalanceTypeEnum.CASH);
         transaction.getAccount()
                 .setBalanceCash(transaction.getAccount()
                         .getBalanceCash()
                         .subtract(transaction.getAmount()));
 
         return TransactionCodesEnum.APROVADA;
-
     }
 
     @Override

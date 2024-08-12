@@ -1,5 +1,6 @@
 package com.ccs.desafiocaju.domain.models.entities;
 
+import com.ccs.desafiocaju.domain.models.enums.TransactionBalanceTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,5 +31,8 @@ public class Transaction {
 
     @Column(nullable = false)
     private String mcc;
+
+    @Enumerated(EnumType.STRING)
+    private TransactionBalanceTypeEnum transactionBalanceType;
 
 }

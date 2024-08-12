@@ -47,7 +47,6 @@ class TransactionServiceImplTest {
 
     @BeforeEach
     void setUp() {
-
         if (account == null) {
             account = new Account();
             account.setBalanceFood(BigDecimal.valueOf(250.0));

@@ -1,0 +1,1 @@
+alter table transaction add column transaction_balance_type varchar(50) not null;

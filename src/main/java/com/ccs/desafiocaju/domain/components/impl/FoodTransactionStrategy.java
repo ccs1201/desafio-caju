@@ -1,7 +1,9 @@
 package com.ccs.desafiocaju.domain.components.impl;
 
 import com.ccs.desafiocaju.domain.components.TransactionStrategy;
+import com.ccs.desafiocaju.domain.infra.exceptions.CajuInsufficientBalanceException;
 import com.ccs.desafiocaju.domain.models.entities.Transaction;
+import com.ccs.desafiocaju.domain.models.enums.TransactionBalanceTypeEnum;
 import com.ccs.desafiocaju.domain.models.enums.TransactionCodesEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,16 +22,19 @@ public class FoodTransactionStrategy implements TransactionStrategy {
 
     @Override
     public TransactionCodesEnum processTransaction(Transaction transaction) {
-        log.debug("Processando Transação em : %s".formatted(this.getClass().getSimpleName()));
-        validarSaldo(transaction.getAccount().getBalanceFood(), transaction.getAmount());
+        try {
+            validarSaldo(transaction.getAccount().getBalanceFood(), transaction.getAmount());
+        } catch (CajuInsufficientBalanceException e) {
+            return fallback.processTransaction(transaction);
+        }
 
+        transaction.setTransactionBalanceType(TransactionBalanceTypeEnum.FOOD);
         transaction.getAccount()
                 .setBalanceFood(transaction.getAccount()
                         .getBalanceFood()
                         .subtract(transaction.getAmount()));
 
         return TransactionCodesEnum.APROVADA;
-
     }
 
     @Override
