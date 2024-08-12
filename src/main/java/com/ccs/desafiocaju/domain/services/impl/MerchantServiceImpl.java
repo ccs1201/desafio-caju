@@ -6,6 +6,7 @@ import com.ccs.desafiocaju.domain.services.MerchantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -25,6 +26,7 @@ public class MerchantServiceImpl implements MerchantService {
         return merchantRepository.save(Merchant.builder()
                 .name(name)
                 .mcc(mcc)
+                .transactions(Collections.emptyList())
                 .build());
     }
 }

@@ -58,6 +58,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private TransactionCodesEnum fallBack(TransactionStrategy strategy, Transaction transaction) {
+
         if (strategy.getFallback().isEmpty()) {
             return TransactionCodesEnum.SALDO_INSUFICIENTE;
         }

@@ -18,4 +18,15 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.findByIdLocking(id).orElseThrow(() ->
                 new CajuException("Account not found"));
     }
+
+    @Override
+    public Account findById(Long id) {
+        return accountRepository.findById(id).orElseThrow(() ->
+                new CajuException("Account not found"));
+    }
+
+    @Override
+    public Account save(Account account) {
+        return accountRepository.save(account);
+    }
 }
