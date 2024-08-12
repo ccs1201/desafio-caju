@@ -106,7 +106,7 @@ class TransactionControllerIntegrationTest {
                     "5811", merchant.getName()));
         }
 
-        var start = System.currentTimeMillis();
+        var start = System.nanoTime();
         for (int i = 0; i < qtdRequisicoes; i++) {
             final var id = i;
             futures.add(CompletableFuture.runAsync(() -> responses
@@ -117,14 +117,15 @@ class TransactionControllerIntegrationTest {
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[qtdRequisicoes])).join();
 
-        var tempoTotal = (System.currentTimeMillis() - start);
+        var tempoTotal = (System.nanoTime() - start);
+        var tempoMedioPorRequisicao = tempoTotal / (double) qtdRequisicoes;
 
         System.out.println("====================================================");
         System.out.printf("               Teste de Carga Sync (%d)%n", numeroTest + 1);
         System.out.println("Quantidade de requisições: " + qtdRequisicoes);
-        System.out.println("Tempo total: " + tempoTotal / 1_000 + " Segundos");
-        System.out.println("Quantidade de requisições por segundo: " + (qtdRequisicoes / (tempoTotal / 1_000)));
-        System.out.println("Tempo médio por request(ms): " + (tempoTotal / qtdRequisicoes));
+        System.out.println("Tempo total: " + tempoTotal + " Ns");
+        System.out.println("Tempo médio por requisição: " + tempoMedioPorRequisicao + " Ns");
+        System.out.println("Quantidade de requisições por Ms: " + ((double) qtdRequisicoes / (tempoTotal / 1_000_000.0)));
         System.out.println("====================================================");
 
 
@@ -150,7 +151,7 @@ class TransactionControllerIntegrationTest {
                     "5811", merchant.getName()));
         }
 
-        var start = System.currentTimeMillis();
+        var start = System.nanoTime();
         for (int i = 0; i < qtdRequisicoes; i++) {
             final var id = i;
             futures.add(CompletableFuture.runAsync(() -> responses
@@ -161,14 +162,15 @@ class TransactionControllerIntegrationTest {
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[qtdRequisicoes])).join();
 
-        var tempoTotal = (System.currentTimeMillis() - start);
+        var tempoTotal = (System.nanoTime() - start);
+        var tempoMedioPorRequisicao = tempoTotal / (double) qtdRequisicoes;
 
         System.out.println("====================================================");
         System.out.printf("               Teste de Carga Async (%d)%n", numeroTest + 1);
         System.out.println("Quantidade de requisições: " + qtdRequisicoes);
-        System.out.println("Tempo total: " + tempoTotal / 1_000 + " Segundos");
-        System.out.println("Quantidade de requisições por segundo: " + (qtdRequisicoes / (tempoTotal / 1_000)));
-        System.out.println("Tempo médio por request(ms): " + (tempoTotal / qtdRequisicoes));
+        System.out.println("Tempo total: " + tempoTotal + " Ns");
+        System.out.println("Tempo médio por requisição: " + tempoMedioPorRequisicao + " Ns");
+        System.out.println("Quantidade de requisições por MS: " + ((double) qtdRequisicoes / (tempoTotal / 1_000_000.0)));
         System.out.println("====================================================");
 
         responses.forEach(response -> {
