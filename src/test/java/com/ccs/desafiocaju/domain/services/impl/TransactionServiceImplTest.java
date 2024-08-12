@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Profile;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -24,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Import(PostgresConfiguration.class)
 @SpringBootTest
-@Profile("test")
 class TransactionServiceImplTest {
 
     @Autowired
