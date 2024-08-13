@@ -119,6 +119,7 @@ class TransactionControllerIntegrationTest {
 
         var tempoTotal = (System.nanoTime() - start);
         var tempoMedioPorRequisicao = tempoTotal / (double) qtdRequisicoes;
+        var tempoTotalSegundos = tempoTotal / 1_000_000_000.0;  // Convertendo nanosegundos para segundos
 
         System.out.println("====================================================");
         System.out.printf("               Teste de Carga Sync (%d)%n", numeroTest + 1);
@@ -126,6 +127,7 @@ class TransactionControllerIntegrationTest {
         System.out.println("Tempo total: " + tempoTotal + " Ns");
         System.out.println("Tempo médio por requisição: " + tempoMedioPorRequisicao + " Ns");
         System.out.println("Quantidade de requisições por Ms: " + ((double) qtdRequisicoes / (tempoTotal / 1_000_000.0)));
+        System.out.println("Quantidade de requisições por segundo: " + (qtdRequisicoes / tempoTotalSegundos));
         System.out.println("====================================================");
 
 
@@ -164,13 +166,15 @@ class TransactionControllerIntegrationTest {
 
         var tempoTotal = (System.nanoTime() - start);
         var tempoMedioPorRequisicao = tempoTotal / (double) qtdRequisicoes;
+        var tempoTotalSegundos = tempoTotal / 1_000_000_000.0;  // Convertendo nanosegundos para segundos
 
         System.out.println("====================================================");
         System.out.printf("               Teste de Carga Async (%d)%n", numeroTest + 1);
         System.out.println("Quantidade de requisições: " + qtdRequisicoes);
         System.out.println("Tempo total: " + tempoTotal + " Ns");
         System.out.println("Tempo médio por requisição: " + tempoMedioPorRequisicao + " Ns");
-        System.out.println("Quantidade de requisições por MS: " + ((double) qtdRequisicoes / (tempoTotal / 1_000_000.0)));
+        System.out.println("Quantidade de requisições por Ms: " + ((double) qtdRequisicoes / (tempoTotal / 1_000_000.0)));
+        System.out.println("Quantidade de requisições por segundo: " + (qtdRequisicoes / tempoTotalSegundos));
         System.out.println("====================================================");
 
         responses.forEach(response -> {
