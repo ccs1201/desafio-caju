@@ -18,8 +18,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
 
@@ -45,6 +45,7 @@ class TransactionControllerIntegrationTest {
     private Account account;
     private Merchant merchantSync;
     private static String url;
+    private final int qtdRequisicoes = 10_000;
 
     @PostConstruct
     public void setup() {
@@ -82,7 +83,7 @@ class TransactionControllerIntegrationTest {
         merchantSync = merchantService.createMerchant("Teste Carga Sync TransactionControllerIntegrationTest", "5811");
         var merchantAsync = merchantService.createMerchant("Teste Carga Async TransactionControllerIntegrationTest", "5811");
 
-        var qtdTestes = 5;
+        var qtdTestes = 10;
 
         for (int i = 0; i < qtdTestes; i++) {
             testCargaProcess(merchantSync, i);
@@ -92,12 +93,11 @@ class TransactionControllerIntegrationTest {
 
 
     void testCargaProcess(Merchant merchant, int numeroTest) {
-        var qtdRequisicoes = 1000;
 
-        var responses = new ArrayList<ResponseEntity<TransactionResponse>>();
-        var futures = new ArrayList<CompletableFuture<?>>(qtdRequisicoes);
+        var responses = new LinkedList<ResponseEntity<TransactionResponse>>();
+        var futures = new CompletableFuture[qtdRequisicoes];
 
-        var listInputs = new ArrayList<TransactionInput>(qtdRequisicoes);
+        var listInputs = new LinkedList<TransactionInput>();
 
         for (int i = 0; i < qtdRequisicoes; i++) {
             account.setId(null);
@@ -108,14 +108,14 @@ class TransactionControllerIntegrationTest {
 
         var start = System.nanoTime();
         for (int i = 0; i < qtdRequisicoes; i++) {
-            final var id = i;
-            futures.add(CompletableFuture.runAsync(() -> responses
-                            .add(restTemplate.postForEntity(url, listInputs.get(id), TransactionResponse.class)),
+            final var index = i;
+            futures[i] = (CompletableFuture.runAsync(() -> responses
+                            .add(restTemplate.postForEntity(url, listInputs.get(index), TransactionResponse.class)),
                     ForkJoinPool.commonPool())
             );
         }
 
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[qtdRequisicoes])).join();
+        CompletableFuture.allOf(futures).join();
 
         var tempoTotal = (System.nanoTime() - start);
         var tempoMedioPorRequisicao = tempoTotal / (double) qtdRequisicoes;
@@ -131,20 +131,20 @@ class TransactionControllerIntegrationTest {
         System.out.println("====================================================");
 
 
-        responses.forEach(response -> {
+        responses.parallelStream().forEach(response -> {
             assertTrue(response.getStatusCode().is2xxSuccessful());
             assertEquals("00", response.getBody().code());
         });
+
     }
 
 
     void testCargaProcessAsync(Merchant merchant, int numeroTest) {
-        var qtdRequisicoes = 1000;
 
-        var responses = new ArrayList<ResponseEntity<TransactionResponse>>();
-        var futures = new ArrayList<CompletableFuture<?>>(qtdRequisicoes);
+        var responses = new LinkedList<ResponseEntity<TransactionResponse>>();
+        var futures = new CompletableFuture[qtdRequisicoes];
 
-        var listInputs = new ArrayList<TransactionInput>(qtdRequisicoes);
+        var listInputs = new LinkedList<TransactionInput>();
 
         for (int i = 0; i < qtdRequisicoes; i++) {
             account.setId(null);
@@ -155,14 +155,14 @@ class TransactionControllerIntegrationTest {
 
         var start = System.nanoTime();
         for (int i = 0; i < qtdRequisicoes; i++) {
-            final var id = i;
-            futures.add(CompletableFuture.runAsync(() -> responses
-                            .add(restTemplate.postForEntity(url.concat("/async"), listInputs.get(id), TransactionResponse.class)),
+            final var index = i;
+            futures[i] = (CompletableFuture.runAsync(() -> responses
+                            .add(restTemplate.postForEntity(url.concat("/async"), listInputs.get(index), TransactionResponse.class)),
                     ForkJoinPool.commonPool())
             );
         }
 
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[qtdRequisicoes])).join();
+        CompletableFuture.allOf(futures).join();
 
         var tempoTotal = (System.nanoTime() - start);
         var tempoMedioPorRequisicao = tempoTotal / (double) qtdRequisicoes;
@@ -177,7 +177,7 @@ class TransactionControllerIntegrationTest {
         System.out.println("Quantidade de requisições por segundo: " + (qtdRequisicoes / tempoTotalSegundos));
         System.out.println("====================================================");
 
-        responses.forEach(response -> {
+        responses.parallelStream().forEach(response -> {
             assertTrue(response.getStatusCode().is2xxSuccessful());
             assertEquals("00", response.getBody().code());
         });
